@@ -1,0 +1,73 @@
+package AnaJson;
+import java_cup.runtime.*;
+import DatosJson.Acciones;
+
+
+parser code 
+
+{:
+    public static String tituloJ = ""; 
+    String Prueba = " valgo lo mismo";
+    Acciones acciones = new Acciones();
+
+    public void llenarAccion(Acciones gestor){
+         acciones = gestor ;
+    }
+
+    public Acciones ver(){
+          return acciones;
+    }
+    public void syntax_error(Symbol s)
+    {
+            System.err.println("Error Sintactico: "+ s.value + " - Fila: " + s.right + " - Columna: " + s.left + ". Recuperado" );
+    }
+
+    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception
+    {
+            System.err.println("Error Sintactico: "+ s.value + " - Fila: " + s.right + " - Columna: " + s.left + ". Sin recuperacion." );
+    }
+
+:}
+
+terminal String COMENT, COMENTLINEA, CADENA, ID, NUMEROS, COMA, DPUNTOS, LLAVEA, LLAVEC, NOMBRE;
+
+non terminal inicio, ini, js, contenido, strin, decimal, titulo;
+
+start with inicio; 
+
+/* Definición de reglas gramaticales */
+inicio ::= ini
+;
+
+ini ::=js
+| ini js
+| titulo
+| ini titulo
+;
+
+titulo ::= NOMBRE DPUNTOS CADENA:a {: tituloJ = a; 
+                                                                        acciones.createJson(a); :}
+
+                                            
+;
+
+js ::= LLAVEA contenido:a LLAVEC 
+;
+
+contenido ::= strin
+| contenido strin
+| decimal
+| contenido decimal
+| error
+;
+
+strin ::= CADENA:a DPUNTOS CADENA:b COMA       {: acciones.addVariable(tituloJ, a, b); :}
+| CADENA:a DPUNTOS CADENA:b                             {: acciones.addVariable(tituloJ, a, b); :}
+;
+
+decimal ::= CADENA:a DPUNTOS NUMEROS:b COMA {: acciones.addVariable(tituloJ, a, b); :}
+| CADENA:a DPUNTOS NUMEROS:b                             {: acciones.addVariable(tituloJ, a, b); :}
+;
+
+
+

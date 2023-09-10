@@ -1,0 +1,200 @@
+package Analizador;
+import java_cup.runtime.*;
+import DatosJson.Acciones;
+import VariablesGlobales.FuncionesGlobales;
+
+parser code 
+
+{:
+    public static String resultado = ""; 
+    Acciones acciones = new Acciones();
+    FuncionesGlobales funcionesGlobales = new FuncionesGlobales();
+
+    public void llenarAccion(Acciones gestor){
+         acciones = gestor ;
+    }
+
+    // debo crear un datos aqui y pasarselo a la interfaz como el Accion
+    public void syntax_error(Symbol s)
+    {
+            System.err.println("Error Sintactico: "+ s.value + " - Fila: " + s.right + " - Columna: " + s.left + ". Recuperado" );
+    }
+
+    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception
+    {
+            System.err.println("Error Sintactico: "+ s.value + " - Fila: " + s.right + " - Columna: " + s.left + ". Sin recuperacion." );
+    }
+
+:}
+
+terminal String  VERDAD, FALSO, INTT, DOUBLEE, FORR, WHILEE, DOO, PRINT, MAS, PORCENTAJE,  SWITCHH, CASEE, BREAKK, DEFAULTT, MENOS, DIVISION, MULTI, MAYOR;
+terminal String IGUALSIMPLE, CHARR, BOOLL, STRINGG, VOIDD, IFF, ELSEIF, ELSEE, MENOR, MAYIGUAL, MENIGUAL, IGUAL, DISTINTO, ANDD,GLOBAL, BARRAS, PIE, DOLAR, NVALOR;
+terminal String ORR, NOT, LLAVEA, LLAVEC,  PARENA, PARENC, DPUNTOS, PUNTOCOMA, COMA, COMENT, COMENTLINEA, CADENA, IDD, NUMEROS, TITULO, EJEX, VAL, TITULOX, TITULOY;
+
+
+non terminal inicio, ini, main, contenido,funciones, variable,  expresion, sentencias, ifs, relacionales, sswitch,case,ocase, defau, sfor, swhile, sdowhile, imprimir,escribir ;
+non terminal vglobal, vbarra, vpie, decimal, strin, defglob, contgloba, defbarras, contbarras, vbarras;
+
+/* Declaraciones de precedencia y asociatividad */
+precedence left ORR;
+precedence left ANDD;
+precedence left NOT;
+precedence left MAYOR, MENOR, MAYIGUAL, MENIGUAL, IGUAL, DISTINTO;
+precedence left MAS, MENOS;
+precedence left MULTI, DIVISION;
+
+
+start with inicio; 
+
+/* Definición de reglas gramaticales */
+inicio ::= ini
+;
+
+ini ::= main
+;
+
+main ::= VOIDD PARENA PARENC LLAVEA contenido:a LLAVEC {: System.out.println("def main:\n"+a); :}
+;
+
+
+
+contenido::= variable:a {: RESULT=(a+"\n");:}
+| contenido:a variable:b {: RESULT=(a+""+b+"\n");:}
+| ifs:a                              {: RESULT=(a+"\n");:}
+| contenido:a ifs:b          {: RESULT=(a+""+b+"\n");:}
+| imprimir:a                    {: RESULT=(a+"\n");:}
+| contenido:a imprimir:b  {: RESULT=(a+""+b+"\n");:}
+| sswitch:a                        {: RESULT=(a+"\n");:}
+| contenido:a sswitch:b  {: RESULT=(a+""+b+"\n");:}
+| sfor:a                        {: RESULT=(a+"\n");:}
+| contenido:a sfor:b     {: RESULT=(a+""+b+"\n");:}
+| swhile:a                        {: RESULT=(a+"\n");:}
+| contenido:a swhile:b     {: RESULT=(a+""+b+"\n");:}
+| sdowhile:a                        {: RESULT=(a+"\n");:}
+| contenido:a sdowhile:b     {: RESULT=(a+""+b+"\n");:}
+| vglobal:a                           {: RESULT=(a+"\n");:}
+| contenido:a vglobal       {: RESULT=(a+"");:}  
+| vbarrasl:a                           {: RESULT=(a+"\n");:}
+| contenido:a vbarras       {: RESULT=(a+"");:}  
+| error
+;
+
+vglobal ::= GLOBAL PARENA PARENC LLAVEA defglob LLAVEC 
+;
+
+defglob ::= contglobal
+| defglob contglobal
+;
+
+contglobal ::= STRINGG IDD:a IGUALSIMPLE CADENA:b PUNTOCOMA                                                                               {: funcionesGlobales.agregarVariable(a, b); :}
+| DOUBLEE IDD:a IGUALSIMPLE NUMEROS:b PUNTOCOMA                                                                                                 {: funcionesGlobales.agregarVariable(a, b); :}
+| STRINGG IDD:a IGUALSIMPLE DOLAR LLAVEA NVALOR COMA CADENA:b COMA CADENA:c LLAVEC PUNTOCOMA        {: String simboloJson = "";
+                                                                                                                                                                                                        simboloJson= acciones.obtenerSimb(b,c);
+                                                                                                                                                                                                         if (simboloJson != null){ funcionesGlobales.agregarVariable(a, simboloJson);}
+                                                                                                                                                                                                        :}      
+| DOUBLEE IDD:a IGUALSIMPLE DOLAR LLAVEA NVALOR COMA CADENA:b COMA CADENA:c LLAVEC PUNTOCOMA         {: String simboloJson = "";
+                                                                                                                                                                                                        simboloJson= acciones.obtenerSimb(b,c);
+                                                                                                                                                                                                         if (simboloJson != null){ funcionesGlobales.agregarVariable(a, simboloJson);} 
+                                                                                                                                                                                                          :}      
+;
+
+vbarras ::= BARRAS PARENA PARENC LLAVEA defbarras LLAVEC
+;
+
+defbarras ::= contbarras
+| defbarras contbarras
+;
+
+contbarras ::= STRINGG  TITULO IGUALSIMPLE 
+
+
+
+
+ifs::= IFF PARENA expresion:a PARENC LLAVEA contenido:b LLAVEC  {: RESULT=("\tif "+a+":\n\t"+b);:}
+| ELSEIF PARENA expresion:a  PARENC LLAVEA contenido:b LLAVEC {: RESULT=("\telif "+a+":\n\t"+b);:}
+| ELSEE LLAVEA contenido:a LLAVEC {: RESULT=("\telse:\n\t"+a);:}
+;
+
+imprimir ::= PRINT PARENA escribir:a PARENC PUNTOCOMA {:RESULT=( "\tprint(" +a+ ")");:}
+;
+
+sswitch ::= SWITCHH PARENA expresion:a PARENC LLAVEA case:b LLAVEC {: RESULT=("\tdef switch(case," + a+"):\n       \tswitch={\n"+b+"\n\t    }");:}
+;
+
+case ::= ocase:a {: RESULT=("\t"+a+"\n");:}
+| case:a ocase:b {: RESULT=(a+"\t"+b+"\n");:}
+;
+
+ocase ::= CASEE  expresion:a DPUNTOS contenido:b BREAKK PUNTOCOMA {:RESULT=("\t\t"+a+":"+b+",");:}
+| CASEE  expresion:a DPUNTOS contenido:b {:RESULT=("\t\t"+a+": "+b+",");:}
+| DEFAULTT DPUNTOS contenido:a {:RESULT=("\t\t"+"4:"+a+",");:}
+| DEFAULTT DPUNTOS contenido:a BREAKK PUNTOCOMA {:RESULT=("\t\t"+"4:"+a+",");:}
+;
+
+sfor::= FORR PARENA INTT IDD:a IGUALSIMPLE NUMEROS:b PUNTOCOMA IDD relacionales NUMEROS:c PUNTOCOMA IDD MAS MAS PARENC LLAVEA contenido:d LLAVEC {:RESULT=("\t for "+a+" in range("+(Integer.parseInt(b)+1)+","+c+"){\n\t"+d+"\t}");:}
+;
+
+swhile ::= WHILEE PARENA expresion:a PARENC LLAVEA contenido:b LLAVEC  {:RESULT=("\twhile " +a+" :\n\t"+b);:}
+;
+
+sdowhile ::=DOO LLAVEA  contenido:c LLAVEC WHILEE  PARENA IDD:a relacionales:b NUMEROS:d PARENC PUNTOCOMA {:RESULT=("\twhile True:\n\t" +c+"\t\t"+a+" = "+a+" + 1\n\t"+"\tif ("+a+" "+b+" "+d+"):\n\t\t break");:}
+;
+
+relacionales::=MAYOR:a {:RESULT=a;:}
+| MENOR:a {:RESULT=a;:}
+| MAYIGUAL:a {:RESULT=a;:}
+| MENIGUAL:a {:RESULT=a;:}
+| IGUAL:a {:RESULT=a;:}
+| DISTINTO:a {:RESULT=a;:}
+;
+
+variable ::= INTT IDD:a PUNTOCOMA {:RESULT=("\t"+a+"=None");:}
+| DOUBLEE IDD:a PUNTOCOMA  {:RESULT=("\t"+a+"=None");:}
+| CHARR IDD:a PUNTOCOMA  {:RESULT=("\t"+a+"=None");:}
+| BOOLL IDD:a PUNTOCOMA  {:RESULT=("\t"+a+"=None");:}
+| STRINGG IDD:a PUNTOCOMA  {:RESULT=("\t"+a+"=None");:}
+| INTT IDD:a IGUALSIMPLE:c expresion:b PUNTOCOMA  {:RESULT=("\t"+a+c+b);:}
+| DOUBLEE IDD:a IGUALSIMPLE:c expresion:b PUNTOCOMA {:RESULT=("\t"+a+c+b);:}
+| CHARR IDD:a IGUALSIMPLE:c expresion:b PUNTOCOMA  {:RESULT=("\t"+a+c+b);:}
+| BOOLL IDD:a IGUALSIMPLE:c expresion:b PUNTOCOMA {:RESULT=("\t"+a+c+b);:}
+| STRINGG IDD:a IGUALSIMPLE:c expresion:b PUNTOCOMA  {:RESULT=("\t"+a+c+b);:}
+| IDD:a IGUALSIMPLE:c expresion:b PUNTOCOMA {:RESULT=("\t"+a+c+b);:}
+;
+
+
+expresion ::= CADENA:a {:RESULT=a;:}
+| NUMEROS:a {:RESULT=a;:}
+| VERDAD:a {:RESULT=a;:}
+| FALSO:a {:RESULT=a;:}
+| expresion:a MAS:c expresion:b {:RESULT=a+c+b;:}
+| expresion:a MENOS:c expresion:b {:RESULT=a+c+b;:}
+| expresion:a MULTI:c expresion:b {:RESULT=a+c+b;:}
+| expresion:a DIVISION:c expresion:b {:RESULT=a+c+b;:}
+| expresion:a MAYOR:c expresion:b {:RESULT=a+c+b;:}
+| expresion:a MENOR:c expresion:b {:RESULT=a+c+b;:}
+| expresion:a IGUAL:c expresion:b {:RESULT=a+c+b;:}
+| expresion:a MAYIGUAL:c expresion:b {:RESULT=a+c+b;:}
+| expresion:a MENIGUAL:c expresion:b {:RESULT=a+c+b;:}
+| expresion:a DISTINTO:c expresion:b {:RESULT=a+c+b;:}
+| expresion:a ANDD:c expresion:b {:RESULT=a+c+b;:}
+| expresion:a ORR:c expresion:b {:RESULT=a+c+b;:}
+| expresion:a NOT:c expresion:b {:RESULT=a+c+b;:}
+| PARENA:b expresion:a PARENC:c {:RESULT=b+a+c;:}
+| IDD:a {:RESULT=a;:}
+| MAS:a {:RESULT=a;:}
+| MENOS:a {:RESULT=a;:}
+| MULTI:a {:RESULT=a;:}
+;
+
+escribir ::= CADENA:a {:RESULT=a;:}
+| NUMEROS:a {:RESULT=a;:}
+| VERDAD:a {:RESULT=a;:}
+| FALSO:a {:RESULT=a;:}
+| expresion:a MAS expresion:b {:RESULT=a+","+b;:}
+| IDD:a {:RESULT=a;:}
+| PARENA:b expresion:a PARENC:c {:RESULT=b+a+c;:}
+;
+
+
+
+
