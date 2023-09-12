@@ -18,8 +18,8 @@ import java_cup.runtime.*;
 %} 
 
 //expresion regular
-COMENTARIO = [//][^"\n"]+
-COMENTARIOLINEAS = [/][*][^\!\>]*[*][/]
+COMENTARIO = "//" [^"\n"]+
+COMENTARIOLINEAS =  [/][*][^\!\>]*[*][/]
 CADENA = ([\"][^\n\"]+[\"])|([\'][^\n\']+[\']) 
 ID = [a-zA-Z][a-zA-Z0-9_]* 
 NUMEROS = ([0-9]+)(\.[0-9]+)?
@@ -56,20 +56,20 @@ NUMEROS = ([0-9]+)(\.[0-9]+)?
 <YYINITIAL> ("TituloY")        {   return new Symbol(sym.TITULOY,yycolumn, yyline, yytext());} 
 
 
-<YYINITIAL> ("+")   {          return new Symbol(sym.MAS, yycolumn, yyline, yytext());}
+<YYINITIAL> ("+")   {        System.out.println("encontro suma");  return new Symbol(sym.MAS, yycolumn, yyline, yytext());}
 <YYINITIAL> ("-")   {            return new Symbol(sym.MENOS, yycolumn, yyline, yytext());}
-<YYINITIAL> ("/")   {               return new Symbol(sym.DIVISION, yycolumn, yyline, yytext());}
+<YYINITIAL> ("/")   {               System.out.println("encontro division"); return new Symbol(sym.DIVISION, yycolumn, yyline, yytext());}
 <YYINITIAL> ("*")   {          return new Symbol(sym.MULTI, yycolumn, yyline, yytext());}
 <YYINITIAL> (">")   {            return new Symbol(sym.MAYOR, yycolumn, yyline, yytext());}
 <YYINITIAL> ("<")   {            return new Symbol(sym.MENOR, yycolumn, yyline, yytext());}
 <YYINITIAL> (">=")   {                  return new Symbol(sym.MAYIGUAL, yycolumn, yyline, yytext());}
 <YYINITIAL> ("<=")   {                  return new Symbol(sym.MENIGUAL, yycolumn, yyline, yytext());}
+<YYINITIAL> ("!")   {          return new Symbol(sym.NOTT, yycolumn, yyline, yytext());}
 <YYINITIAL> ("==")   {            return new Symbol(sym.IGUAL, yycolumn, yyline, yytext());}
 <YYINITIAL> ("!=")   {               return new Symbol(sym.DISTINTO, yycolumn, yyline, yytext());}
 <YYINITIAL> ("&&")   {          return new Symbol(sym.ANDD, yycolumn, yyline, yytext());}
 <YYINITIAL> ("||")   {         return new Symbol(sym.ORR, yycolumn, yyline, yytext());}
 <YYINITIAL> ("=")   {;                  return new Symbol(sym.IGUALSIMPLE, yycolumn, yyline, yytext());}
-<YYINITIAL> ("!")   {          return new Symbol(sym.NOT, yycolumn, yyline, yytext());}
 <YYINITIAL> ("$")   {          return new Symbol(sym.DOLAR, yycolumn, yyline, yytext());}
 
 
@@ -84,8 +84,8 @@ NUMEROS = ([0-9]+)(\.[0-9]+)?
 <YYINITIAL> (",")   {          return new Symbol(sym.COMA, yycolumn, yyline, yytext());}
 
 
-<YYINITIAL> {COMENTARIO}   {             return new Symbol(sym.COMENT, yycolumn, yyline, yytext());}
-<YYINITIAL> {COMENTARIOLINEAS}   {                   return new Symbol(sym.COMENTLINEA, yycolumn, yyline, yytext());}
+<YYINITIAL> {COMENTARIO}   {             System.out.println("se encontro un Comentario linea");}
+<YYINITIAL> {COMENTARIOLINEAS}   {          System.out.println("se encontro un comentarioLineas");}
 <YYINITIAL> {CADENA}   {                    return new Symbol(sym.CADENA, yycolumn, yyline, yytext());}
 <YYINITIAL> {ID}   {                return new Symbol(sym.IDD, yycolumn, yyline, yytext());}
 <YYINITIAL> {NUMEROS}   {;                    return new Symbol(sym.NUMEROS, yycolumn, yyline, yytext());}

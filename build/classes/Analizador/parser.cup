@@ -2,11 +2,24 @@ package Analizador;
 import java_cup.runtime.*;
 import DatosJson.Acciones;
 import VariablesGlobales.FuncionesGlobales;
+import java.util.ArrayList;
+
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartFrame;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.general.DefaultPieDataset;
 
 parser code 
 
 {:
     public static String resultado = ""; 
+    public static String Titulo = "";
+    public static String TituloX= "";
+    public static String TituloY="";
+    ArrayList<String> ArrayEjex = new ArrayList<String>();
+    ArrayList<Double> ArrayValores = new ArrayList<Double>();
     Acciones acciones = new Acciones();
     FuncionesGlobales funcionesGlobales = new FuncionesGlobales();
 
@@ -28,17 +41,17 @@ parser code
 :}
 
 terminal String  VERDAD, FALSO, INTT, DOUBLEE, FORR, WHILEE, DOO, PRINT, MAS, PORCENTAJE,  SWITCHH, CASEE, BREAKK, DEFAULTT, MENOS, DIVISION, MULTI, MAYOR;
-terminal String IGUALSIMPLE, CHARR, BOOLL, STRINGG, VOIDD, IFF, ELSEIF, ELSEE, MENOR, MAYIGUAL, MENIGUAL, IGUAL, DISTINTO, ANDD,GLOBAL, BARRAS, PIE, DOLAR, NVALOR;
-terminal String ORR, NOT, LLAVEA, LLAVEC,  PARENA, PARENC, DPUNTOS, PUNTOCOMA, COMA, COMENT, COMENTLINEA, CADENA, IDD, NUMEROS, TITULO, EJEX, VAL, TITULOX, TITULOY;
+terminal String IGUALSIMPLE, CHARR, BOOLL, STRINGG, VOIDD, IFF, ELSEIF, ELSEE, MENOR, MAYIGUAL, MENIGUAL, IGUAL, DISTINTO, ANDD,GLOBAL, BARRAS, PIE, DOLAR, NVALOR, CORA, CORC;
+terminal String ORR, NOTT, LLAVEA, LLAVEC,  PARENA, PARENC, DPUNTOS, PUNTOCOMA, COMA, CADENA, IDD, NUMEROS, TITULO, EJEX, VAL, TITULOX, TITULOY;
 
 
 non terminal inicio, ini, main, contenido,funciones, variable,  expresion, sentencias, ifs, relacionales, sswitch,case,ocase, defau, sfor, swhile, sdowhile, imprimir,escribir ;
-non terminal vglobal, vbarra, vpie, decimal, strin, defglob, contgloba, defbarras, contbarras, vbarras;
+non terminal vglobal, vpie, decimal, strin, defglob, contglobal, defbarras, contbarras, vbarras, contejex, contejex2, contval, contval2;
 
 /* Declaraciones de precedencia y asociatividad */
 precedence left ORR;
 precedence left ANDD;
-precedence left NOT;
+precedence left NOTT;
 precedence left MAYOR, MENOR, MAYIGUAL, MENIGUAL, IGUAL, DISTINTO;
 precedence left MAS, MENOS;
 precedence left MULTI, DIVISION;
@@ -72,9 +85,9 @@ contenido::= variable:a {: RESULT=(a+"\n");:}
 | contenido:a swhile:b     {: RESULT=(a+""+b+"\n");:}
 | sdowhile:a                        {: RESULT=(a+"\n");:}
 | contenido:a sdowhile:b     {: RESULT=(a+""+b+"\n");:}
-| vglobal:a                           {: RESULT=(a+"\n");:}
+| vglobal                           
 | contenido:a vglobal       {: RESULT=(a+"");:}  
-| vbarrasl:a                           {: RESULT=(a+"\n");:}
+| vbarras    
 | contenido:a vbarras       {: RESULT=(a+"");:}  
 | error
 ;
@@ -98,17 +111,101 @@ contglobal ::= STRINGG IDD:a IGUALSIMPLE CADENA:b PUNTOCOMA                     
                                                                                                                                                                                                           :}      
 ;
 
-vbarras ::= BARRAS PARENA PARENC LLAVEA defbarras LLAVEC
+vbarras ::= BARRAS PARENA PARENC LLAVEA defbarras LLAVEC          {: 
+                                                                    
+                                                                    DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+                                                                    int tamaño = ArrayEjex.size();
+
+                                                                    for (int i = 0; i < tamaño; i++) {
+                                                                        dataset.addValue(ArrayValores.get(i), "Valor", ArrayEjex.get(i));
+                                                                    }
+
+                                                                    // Creación de gráfica
+                                                                    JFreeChart grafica = 
+                                                                        ChartFactory.createBarChart(
+                                                                            Titulo, //TITULO
+                                                                            TituloX, TituloY, 
+                                                                            dataset, 
+                                                                            PlotOrientation.VERTICAL,
+                                                                            true, true, true);
+
+
+                                                                    // Mostrar
+                                                                    ChartFrame frame = new ChartFrame(Titulo,  grafica);
+                                                                    frame.pack();
+                                                                    frame.setVisible(true);
+                                                                     
+                                                                     :}
 ;
 
 defbarras ::= contbarras
 | defbarras contbarras
 ;
 
-contbarras ::= STRINGG  TITULO IGUALSIMPLE 
+contbarras ::= STRINGG  TITULO IGUALSIMPLE CADENA:a PUNTOCOMA {: Titulo = a; :}
+| STRINGG  TITULO IGUALSIMPLE IDD:a PUNTOCOMA                                    {: String simboloJson = "";
+                                                                                                                            simboloJson= funcionesGlobales.obtenerValor(a);
+                                                                                                                            if (simboloJson != null){ Titulo=simboloJson; } 
+                                                                                                                          :}           
+| STRINGG CORA CORC EJEX IGUALSIMPLE LLAVEA contejex LLAVEC PUNTOCOMA
+| DOUBLEE CORA CORC VAL IGUALSIMPLE LLAVEA contval LLAVEC PUNTOCOMA
+| STRINGG  TITULOX IGUALSIMPLE CADENA:a PUNTOCOMA                         {: TituloX = a; :}
+| STRINGG  TITULOX IGUALSIMPLE IDD:a PUNTOCOMA                                    {: String simboloJson = "";
+                                                                                                                            simboloJson= funcionesGlobales.obtenerValor(a);
+                                                                                                                            if (simboloJson != null){ TituloX=simboloJson; } 
+                                                                                                                          :}        
+| STRINGG  TITULOY IGUALSIMPLE CADENA:a PUNTOCOMA                          {: TituloY = a; :}
+| STRINGG  TITULOY IGUALSIMPLE IDD:a PUNTOCOMA                                    {: String simboloJson = "";
+                                                                                                                            simboloJson= funcionesGlobales.obtenerValor(a);
+                                                                                                                            if (simboloJson != null){ TituloY=simboloJson; } 
+                                                                                                                          :}    
+;
 
+contejex ::= contejex2
+| contejex contejex2
+; 
+contejex2::= CADENA:a COMA                                                                                      {: ArrayEjex.add(a); :}
+| IDD:a COMA                                                                                                                   {: String simboloJson = "";
+                                                                                                                                         simboloJson= funcionesGlobales.obtenerValor(a);
+                                                                                                                                         if (simboloJson != null){ ArrayEjex.add(simboloJson); } 
+                                                                                                                                        :}   
+| DOLAR LLAVEA NVALOR COMA CADENA:b COMA CADENA:c LLAVEC COMA         {: String simboloJson = "";
+                                                                                                                                         simboloJson= acciones.obtenerSimb(b,c);
+                                                                                                                                         if (simboloJson != null){ ArrayEjex.add(simboloJson); } 
+                                                                                                                                        :}      
+| CADENA:a                                                                                                          {: ArrayEjex.add(a); :}
+| IDD:a                                                                                                                   {: String simboloJson = "";
+                                                                                                                              simboloJson= funcionesGlobales.obtenerValor(a);
+                                                                                                                               if (simboloJson != null){ ArrayEjex.add(simboloJson); } 
+                                                                                                                             :}   
+| DOLAR LLAVEA NVALOR COMA CADENA:b COMA CADENA:c LLAVEC       {: String simboloJson = "";
+                                                                                                                              simboloJson= acciones.obtenerSimb(b,c);
+                                                                                                                              if (simboloJson != null){ ArrayEjex.add(simboloJson); } 
+                                                                                                                            :}   
+;
 
-
+contval ::= contval2
+| contval contval2
+;
+contval2::= NUMEROS:a COMA                                                                                      {: double x = Double.parseDouble(a); ArrayValores.add(x); :}
+| IDD:a COMA                                                                                                                   {: String simboloJson = "";
+                                                                                                                                         simboloJson= funcionesGlobales.obtenerValor(a);
+                                                                                                                                         if (simboloJson != null){ double x = Double.parseDouble(simboloJson);  ArrayValores.add(x); } 
+                                                                                                                                        :}   
+| DOLAR LLAVEA NVALOR COMA CADENA:b COMA CADENA:c LLAVEC COMA         {: String simboloJson = "";
+                                                                                                                                         simboloJson= acciones.obtenerSimb(b,c);
+                                                                                                                                         if (simboloJson != null){ double x = Double.parseDouble(simboloJson);  ArrayValores.add(x); } 
+                                                                                                                                        :}      
+| NUMEROS:a                                                                                                          {: double x = Double.parseDouble(a); ArrayValores.add(x); :}
+| IDD:a                                                                                                                   {: String simboloJson = "";
+                                                                                                                              simboloJson= funcionesGlobales.obtenerValor(a);
+                                                                                                                               if (simboloJson != null){ double x = Double.parseDouble(simboloJson);  ArrayValores.add(x); } 
+                                                                                                                             :}   
+| DOLAR LLAVEA NVALOR COMA CADENA:b COMA CADENA:c LLAVEC       {: String simboloJson = "";
+                                                                                                                              simboloJson= acciones.obtenerSimb(b,c);
+                                                                                                                             if (simboloJson != null){ double x = Double.parseDouble(simboloJson);  ArrayValores.add(x); } 
+                                                                                                                            :}   
+;
 
 ifs::= IFF PARENA expresion:a PARENC LLAVEA contenido:b LLAVEC  {: RESULT=("\tif "+a+":\n\t"+b);:}
 | ELSEIF PARENA expresion:a  PARENC LLAVEA contenido:b LLAVEC {: RESULT=("\telif "+a+":\n\t"+b);:}
@@ -166,33 +263,50 @@ expresion ::= CADENA:a {:RESULT=a;:}
 | NUMEROS:a {:RESULT=a;:}
 | VERDAD:a {:RESULT=a;:}
 | FALSO:a {:RESULT=a;:}
+| IDD:a {:RESULT=a;:}
 | expresion:a MAS:c expresion:b {:RESULT=a+c+b;:}
 | expresion:a MENOS:c expresion:b {:RESULT=a+c+b;:}
 | expresion:a MULTI:c expresion:b {:RESULT=a+c+b;:}
-| expresion:a DIVISION:c expresion:b {:RESULT=a+c+b;:}
+| expresion:a DIVISION:c expresion:b {:RESULT=a+c+b; :}
 | expresion:a MAYOR:c expresion:b {:RESULT=a+c+b;:}
 | expresion:a MENOR:c expresion:b {:RESULT=a+c+b;:}
 | expresion:a IGUAL:c expresion:b {:RESULT=a+c+b;:}
 | expresion:a MAYIGUAL:c expresion:b {:RESULT=a+c+b;:}
 | expresion:a MENIGUAL:c expresion:b {:RESULT=a+c+b;:}
+| expresion:a NOTT:c expresion:b {:RESULT=a+c+b;:}
 | expresion:a DISTINTO:c expresion:b {:RESULT=a+c+b;:}
 | expresion:a ANDD:c expresion:b {:RESULT=a+c+b;:}
 | expresion:a ORR:c expresion:b {:RESULT=a+c+b;:}
-| expresion:a NOT:c expresion:b {:RESULT=a+c+b;:}
 | PARENA:b expresion:a PARENC:c {:RESULT=b+a+c;:}
-| IDD:a {:RESULT=a;:}
 | MAS:a {:RESULT=a;:}
 | MENOS:a {:RESULT=a;:}
 | MULTI:a {:RESULT=a;:}
+| DIVISION:a {:RESULT=a;:}
 ;
 
 escribir ::= CADENA:a {:RESULT=a;:}
 | NUMEROS:a {:RESULT=a;:}
 | VERDAD:a {:RESULT=a;:}
 | FALSO:a {:RESULT=a;:}
-| expresion:a MAS expresion:b {:RESULT=a+","+b;:}
 | IDD:a {:RESULT=a;:}
-| PARENA:b expresion:a PARENC:c {:RESULT=b+a+c;:}
+| escribir:a MAS:c escribir:b {:RESULT=a+","+b;:}
+| escribir:a MENOS:c escribir:b {:RESULT=a+c+b;:}
+| escribir:a MULTI:c escribir:b {:RESULT=a+c+b;:}
+| escribir:a DIVISION:c escribir:b {:RESULT=a+c+b; :}
+| escribir:a MAYOR:c escribir:b {:RESULT=a+c+b;:}
+| escribir:a MENOR:c escribir:b {:RESULT=a+c+b;:}
+| escribir:a IGUAL:c escribir:b {:RESULT=a+c+b;:}
+| escribir:a MAYIGUAL:c escribir:b {:RESULT=a+c+b;:}
+| escribir:a MENIGUAL:c escribir:b {:RESULT=a+c+b;:}
+| escribir:a NOTT:c escribir:b {:RESULT=a+c+b;:}
+| escribir:a DISTINTO:c escribir:b {:RESULT=a+c+b;:}
+| escribir:a ANDD:c escribir:b {:RESULT=a+c+b;:}
+| escribir:a ORR:c escribir:b {:RESULT=a+c+b;:}
+| PARENA:b escribir:a PARENC:c {:RESULT=b+a+c;:}
+| MAS:a {:RESULT=a;:}
+| MENOS:a {:RESULT=a;:}
+| MULTI:a {:RESULT=a;:}
+| DIVISION:a {:RESULT=a;:}
 ;
 
 
