@@ -14,10 +14,10 @@ import org.jfree.data.general.DefaultPieDataset;
 parser code 
 
 {:
-    public static String resultado = ""; 
     public static String Titulo = "";
     public static String TituloX= "";
     public static String TituloY="";
+    public static String Salida="";
     ArrayList<String> ArrayEjex = new ArrayList<String>();
     ArrayList<Double> ArrayValores = new ArrayList<Double>();
     Acciones acciones = new Acciones();
@@ -26,6 +26,11 @@ parser code
     public void llenarAccion(Acciones gestor){
          acciones = gestor ;
     }
+    
+   public String textoSalida(){
+        return Salida;
+    }
+
 
     // debo crear un datos aqui y pasarselo a la interfaz como el Accion
     public void syntax_error(Symbol s)
@@ -66,7 +71,7 @@ inicio ::= ini
 ini ::= main
 ;
 
-main ::= VOIDD PARENA PARENC LLAVEA contenido:a LLAVEC {: System.out.println("def main:\n"+a); :}
+main ::= VOIDD PARENA PARENC LLAVEA contenido:a LLAVEC {: System.out.println("def main:\n"+a); Salida="def main:\n"+a;:}
 ;
 
 
@@ -89,6 +94,8 @@ contenido::= variable:a {: RESULT=(a+"\n");:}
 | contenido:a vglobal       {: RESULT=(a+"");:}  
 | vbarras    
 | contenido:a vbarras       {: RESULT=(a+"");:}  
+| vpie    
+| contenido:a vpie       {: RESULT=(a+"");:}  
 | error
 ;
 
@@ -110,6 +117,26 @@ contglobal ::= STRINGG IDD:a IGUALSIMPLE CADENA:b PUNTOCOMA                     
                                                                                                                                                                                                          if (simboloJson != null){ funcionesGlobales.agregarVariable(a, simboloJson);} 
                                                                                                                                                                                                           :}      
 ;
+vpie ::= PIE PARENA PARENC LLAVEA defbarras LLAVEC {:
+
+                                                                                                 //Ingreso de datos
+       DefaultPieDataset dataset = new DefaultPieDataset();
+         int tamaño = ArrayEjex.size();
+         for (int i = 0; i < tamaño; i++) {
+            dataset.setValue(ArrayEjex.get(i), ArrayValores.get(i));
+        }
+        // Creación de gráfica
+        JFreeChart grafica = 
+            ChartFactory.createPieChart(Titulo, dataset);
+        
+                 ArrayValores.clear();
+                  ArrayEjex.clear();
+        // Mostrar
+        ChartFrame frame = new ChartFrame(Titulo, grafica);
+        frame.pack();
+        frame.setVisible(true);
+   :}
+;
 
 vbarras ::= BARRAS PARENA PARENC LLAVEA defbarras LLAVEC          {: 
                                                                     
@@ -129,12 +156,13 @@ vbarras ::= BARRAS PARENA PARENC LLAVEA defbarras LLAVEC          {:
                                                                             PlotOrientation.VERTICAL,
                                                                             true, true, true);
 
-
+                                                                       ArrayValores.clear();
+                                                                       ArrayEjex.clear();
                                                                     // Mostrar
                                                                     ChartFrame frame = new ChartFrame(Titulo,  grafica);
                                                                     frame.pack();
                                                                     frame.setVisible(true);
-                                                                     
+                                                             
                                                                      :}
 ;
 
@@ -146,7 +174,11 @@ contbarras ::= STRINGG  TITULO IGUALSIMPLE CADENA:a PUNTOCOMA {: Titulo = a; :}
 | STRINGG  TITULO IGUALSIMPLE IDD:a PUNTOCOMA                                    {: String simboloJson = "";
                                                                                                                             simboloJson= funcionesGlobales.obtenerValor(a);
                                                                                                                             if (simboloJson != null){ Titulo=simboloJson; } 
-                                                                                                                          :}           
+                                                                                                                          :}     
+|      STRINGG  TITULO IGUALSIMPLE DOLAR LLAVEA NVALOR COMA CADENA:b COMA CADENA:c LLAVEC PUNTOCOMA   {: String simboloJson = "";
+                                                                                                                              simboloJson= acciones.obtenerSimb(b,c);
+                                                                                                                              if (simboloJson != null){ Titulo=simboloJson; } 
+                                                                                                                            :}   
 | STRINGG CORA CORC EJEX IGUALSIMPLE LLAVEA contejex LLAVEC PUNTOCOMA
 | DOUBLEE CORA CORC VAL IGUALSIMPLE LLAVEA contval LLAVEC PUNTOCOMA
 | STRINGG  TITULOX IGUALSIMPLE CADENA:a PUNTOCOMA                         {: TituloX = a; :}
@@ -154,11 +186,19 @@ contbarras ::= STRINGG  TITULO IGUALSIMPLE CADENA:a PUNTOCOMA {: Titulo = a; :}
                                                                                                                             simboloJson= funcionesGlobales.obtenerValor(a);
                                                                                                                             if (simboloJson != null){ TituloX=simboloJson; } 
                                                                                                                           :}        
+| STRINGG  TITULOX IGUALSIMPLE DOLAR LLAVEA NVALOR COMA CADENA:b COMA CADENA:c LLAVEC PUNTOCOMA       {: String simboloJson = "";
+                                                                                                                              simboloJson= acciones.obtenerSimb(b,c);
+                                                                                                                              if (simboloJson != null){ TituloX=simboloJson; } 
+                                                                                                                            :}   
 | STRINGG  TITULOY IGUALSIMPLE CADENA:a PUNTOCOMA                          {: TituloY = a; :}
 | STRINGG  TITULOY IGUALSIMPLE IDD:a PUNTOCOMA                                    {: String simboloJson = "";
                                                                                                                             simboloJson= funcionesGlobales.obtenerValor(a);
                                                                                                                             if (simboloJson != null){ TituloY=simboloJson; } 
                                                                                                                           :}    
+| STRINGG  TITULOY IGUALSIMPLE DOLAR LLAVEA NVALOR COMA CADENA:b COMA CADENA:c LLAVEC PUNTOCOMA     {: String simboloJson = "";
+                                                                                                                              simboloJson= acciones.obtenerSimb(b,c);
+                                                                                                                              if (simboloJson != null){ TituloY =simboloJson; } 
+                                                                                                                            :}   
 ;
 
 contejex ::= contejex2
@@ -273,10 +313,10 @@ expresion ::= CADENA:a {:RESULT=a;:}
 | expresion:a IGUAL:c expresion:b {:RESULT=a+c+b;:}
 | expresion:a MAYIGUAL:c expresion:b {:RESULT=a+c+b;:}
 | expresion:a MENIGUAL:c expresion:b {:RESULT=a+c+b;:}
-| expresion:a NOTT:c expresion:b {:RESULT=a+c+b;:}
+| expresion:a NOTT:c expresion:b {:RESULT=a+" not "+b;:}
 | expresion:a DISTINTO:c expresion:b {:RESULT=a+c+b;:}
-| expresion:a ANDD:c expresion:b {:RESULT=a+c+b;:}
-| expresion:a ORR:c expresion:b {:RESULT=a+c+b;:}
+| expresion:a ANDD:c expresion:b {:RESULT=a+" and "+b;:}
+| expresion:a ORR:c expresion:b {:RESULT=a+" or "+b;:}
 | PARENA:b expresion:a PARENC:c {:RESULT=b+a+c;:}
 | MAS:a {:RESULT=a;:}
 | MENOS:a {:RESULT=a;:}
@@ -298,10 +338,10 @@ escribir ::= CADENA:a {:RESULT=a;:}
 | escribir:a IGUAL:c escribir:b {:RESULT=a+c+b;:}
 | escribir:a MAYIGUAL:c escribir:b {:RESULT=a+c+b;:}
 | escribir:a MENIGUAL:c escribir:b {:RESULT=a+c+b;:}
-| escribir:a NOTT:c escribir:b {:RESULT=a+c+b;:}
+| escribir:a NOTT:c escribir:b {:RESULT=a+" not "+b;:}
 | escribir:a DISTINTO:c escribir:b {:RESULT=a+c+b;:}
-| escribir:a ANDD:c escribir:b {:RESULT=a+c+b;:}
-| escribir:a ORR:c escribir:b {:RESULT=a+c+b;:}
+| escribir:a ANDD:c escribir:b {:RESULT=a+" and "+b;:}
+| escribir:a ORR:c escribir:b {:RESULT=a+" or "+b;:}
 | PARENA:b escribir:a PARENC:c {:RESULT=b+a+c;:}
 | MAS:a {:RESULT=a;:}
 | MENOS:a {:RESULT=a;:}

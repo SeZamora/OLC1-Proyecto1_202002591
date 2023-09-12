@@ -4,8 +4,9 @@
 
 package Analizador; 
 import java_cup.runtime.*;
-
-
+import Errores.Excepcion;
+import Tokens.token;
+import java.util.ArrayList;
 
 @SuppressWarnings("fallthrough")
 public class Lexico implements java_cup.runtime.Scanner {
@@ -454,6 +455,11 @@ public class Lexico implements java_cup.runtime.Scanner {
 
   /* user code: */
 
+        // crear un arraylist para los errores lexicos
+        public  ArrayList<Excepcion> erroresLexicos = new ArrayList<Excepcion>() ;
+        // array tokens
+        public  ArrayList<token> Rtokens = new ArrayList<token>() ;
+
 
   /**
    * Creates a new scanner
@@ -881,7 +887,7 @@ public class Lexico implements java_cup.runtime.Scanner {
       else {
         switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
           case 1:
-            { System.out.println("Error Lexico: " + yytext() + " | Fila:" + yyline + " | Columna: " + yycolumn);
+            { erroresLexicos.add(new Excepcion(yytext()+"", "error lexico", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));
             }
           // fall through
           case 60: break;
@@ -891,287 +897,287 @@ public class Lexico implements java_cup.runtime.Scanner {
           // fall through
           case 61: break;
           case 3:
-            { return new Symbol(sym.NOTT, yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Operacion Logica", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));     return new Symbol(sym.NOTT, yycolumn, yyline, yytext());
             }
           // fall through
           case 62: break;
           case 4:
-            { return new Symbol(sym.DOLAR, yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Signo $", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));     return new Symbol(sym.DOLAR, yycolumn, yyline, yytext());
             }
           // fall through
           case 63: break;
           case 5:
-            { return new Symbol(sym.PARENA, yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Parentesis abierto", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));         return new Symbol(sym.PARENA, yycolumn, yyline, yytext());
             }
           // fall through
           case 64: break;
           case 6:
-            { return new Symbol(sym.PARENC, yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Parentensis cerrado", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));        return new Symbol(sym.PARENC, yycolumn, yyline, yytext());
             }
           // fall through
           case 65: break;
           case 7:
-            { return new Symbol(sym.MULTI, yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Operacion Aritmetica", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));    return new Symbol(sym.MULTI, yycolumn, yyline, yytext());
             }
           // fall through
           case 66: break;
           case 8:
-            { System.out.println("encontro suma");  return new Symbol(sym.MAS, yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Operacion Aritmetica", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));   System.out.println("encontro suma");  return new Symbol(sym.MAS, yycolumn, yyline, yytext());
             }
           // fall through
           case 67: break;
           case 9:
-            { return new Symbol(sym.COMA, yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "coma", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));    return new Symbol(sym.COMA, yycolumn, yyline, yytext());
             }
           // fall through
           case 68: break;
           case 10:
-            { return new Symbol(sym.MENOS, yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Operacion Aritmetica", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));     return new Symbol(sym.MENOS, yycolumn, yyline, yytext());
             }
           // fall through
           case 69: break;
           case 11:
-            { System.out.println("encontro division"); return new Symbol(sym.DIVISION, yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Operacion Aritmetica", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));      System.out.println("encontro division"); return new Symbol(sym.DIVISION, yycolumn, yyline, yytext());
             }
           // fall through
           case 70: break;
           case 12:
-            { ;                    return new Symbol(sym.NUMEROS, yycolumn, yyline, yytext());
+            { ;              Rtokens.add(new token(yytext()+"", "Numero" , Integer.toString(yyline+1), Integer.toString(yycolumn+1)));          return new Symbol(sym.NUMEROS, yycolumn, yyline, yytext());
             }
           // fall through
           case 71: break;
           case 13:
-            { return new Symbol(sym.DPUNTOS, yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Dos puntos", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));     return new Symbol(sym.DPUNTOS, yycolumn, yyline, yytext());
             }
           // fall through
           case 72: break;
           case 14:
-            { return new Symbol(sym.PUNTOCOMA, yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Punto coma", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));     return new Symbol(sym.PUNTOCOMA, yycolumn, yyline, yytext());
             }
           // fall through
           case 73: break;
           case 15:
-            { return new Symbol(sym.MENOR, yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Operacion Racionale", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));       return new Symbol(sym.MENOR, yycolumn, yyline, yytext());
             }
           // fall through
           case 74: break;
           case 16:
-            { ;                  return new Symbol(sym.IGUALSIMPLE, yycolumn, yyline, yytext());
+            { ;          Rtokens.add(new token(yytext()+"", "Signo =", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));            return new Symbol(sym.IGUALSIMPLE, yycolumn, yyline, yytext());
             }
           // fall through
           case 75: break;
           case 17:
-            { return new Symbol(sym.MAYOR, yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Operacion Racionale", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));     return new Symbol(sym.MAYOR, yycolumn, yyline, yytext());
             }
           // fall through
           case 76: break;
           case 18:
-            { return new Symbol(sym.IDD, yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Identificador", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));          return new Symbol(sym.IDD, yycolumn, yyline, yytext());
             }
           // fall through
           case 77: break;
           case 19:
-            { return new Symbol(sym.CORA, yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Corchete abierto", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));         return new Symbol(sym.CORA, yycolumn, yyline, yytext());
             }
           // fall through
           case 78: break;
           case 20:
-            { return new Symbol(sym.CORC, yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Corchete Cerrado", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));       return new Symbol(sym.CORC, yycolumn, yyline, yytext());
             }
           // fall through
           case 79: break;
           case 21:
-            { return new Symbol(sym.LLAVEA, yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Llave abierta", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));      return new Symbol(sym.LLAVEA, yycolumn, yyline, yytext());
             }
           // fall through
           case 80: break;
           case 22:
-            { return new Symbol(sym.LLAVEC, yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Llave Cierra", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));     return new Symbol(sym.LLAVEC, yycolumn, yyline, yytext());
             }
           // fall through
           case 81: break;
           case 23:
-            { return new Symbol(sym.DISTINTO, yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Operacion Racionale", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));      return new Symbol(sym.DISTINTO, yycolumn, yyline, yytext());
             }
           // fall through
           case 82: break;
           case 24:
-            { return new Symbol(sym.ANDD, yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Operacion Logica", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));   return new Symbol(sym.ANDD, yycolumn, yyline, yytext());
             }
           // fall through
           case 83: break;
           case 25:
-            { return new Symbol(sym.MENIGUAL, yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Operacion Racionale", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));        return new Symbol(sym.MENIGUAL, yycolumn, yyline, yytext());
             }
           // fall through
           case 84: break;
           case 26:
-            { return new Symbol(sym.IGUAL, yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Operacion Racionale", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));      return new Symbol(sym.IGUAL, yycolumn, yyline, yytext());
             }
           // fall through
           case 85: break;
           case 27:
-            { return new Symbol(sym.MAYIGUAL, yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Operacion Racionale", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));        return new Symbol(sym.MAYIGUAL, yycolumn, yyline, yytext());
             }
           // fall through
           case 86: break;
           case 28:
-            { return new Symbol(sym.DOO,yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Sentencia Do", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));  return new Symbol(sym.DOO,yycolumn, yyline, yytext());
             }
           // fall through
           case 87: break;
           case 29:
-            { return new Symbol(sym.IFF,yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Sentencia IF", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));   return new Symbol(sym.IFF,yycolumn, yyline, yytext());
             }
           // fall through
           case 88: break;
           case 30:
-            { return new Symbol(sym.ORR, yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Operacion Logica", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));    return new Symbol(sym.ORR, yycolumn, yyline, yytext());
             }
           // fall through
           case 89: break;
           case 31:
-            { return new Symbol(sym.CADENA, yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Cadena", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));             return new Symbol(sym.CADENA, yycolumn, yyline, yytext());
             }
           // fall through
           case 90: break;
           case 32:
-            { System.out.println("se encontro un Comentario linea");
+            { Rtokens.add(new token(yytext()+"", "Comentario de una linea", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));      System.out.println("se encontro un Comentario linea");
             }
           // fall through
           case 91: break;
           case 33:
-            { return new Symbol(sym.FORR,yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Sentencia For", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));  return new Symbol(sym.FORR,yycolumn, yyline, yytext());
             }
           // fall through
           case 92: break;
           case 34:
-            { return new Symbol(sym.INTT,yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Tipos de Dato", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));  return new Symbol(sym.INTT,yycolumn, yyline, yytext());
             }
           // fall through
           case 93: break;
           case 35:
-            { System.out.println("se encontro un comentarioLineas");
+            { Rtokens.add(new token(yytext()+"", "Comentario multilinea", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));      System.out.println("se encontro un comentarioLineas");
             }
           // fall through
           case 94: break;
           case 36:
-            { return new Symbol(sym.BOOLL,yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Tipos de Dato", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));  return new Symbol(sym.BOOLL,yycolumn, yyline, yytext());
             }
           // fall through
           case 95: break;
           case 37:
-            { return new Symbol(sym.CASEE,yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Sentencia Case", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));  return new Symbol(sym.CASEE,yycolumn, yyline, yytext());
             }
           // fall through
           case 96: break;
           case 38:
-            { return new Symbol(sym.CHARR,yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Tipos de Dato", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));  return new Symbol(sym.CHARR,yycolumn, yyline, yytext());
             }
           // fall through
           case 97: break;
           case 39:
-            { return new Symbol(sym.EJEX,yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Palabra reservada Eje X", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));  return new Symbol(sym.EJEX,yycolumn, yyline, yytext());
             }
           // fall through
           case 98: break;
           case 40:
-            { return new Symbol(sym.ELSEE,yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Setencia Else", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));  return new Symbol(sym.ELSEE,yycolumn, yyline, yytext());
             }
           // fall through
           case 99: break;
           case 41:
-            { return new Symbol(sym.VERDAD,yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Valor Booleano", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));  return new Symbol(sym.VERDAD,yycolumn, yyline, yytext());
             }
           // fall through
           case 100: break;
           case 42:
-            { return new Symbol(sym.BREAKK,yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Break", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));  return new Symbol(sym.BREAKK,yycolumn, yyline, yytext());
             }
           // fall through
           case 101: break;
           case 43:
-            { return new Symbol(sym.FALSO,yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Valor Booleano", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));  return new Symbol(sym.FALSO,yycolumn, yyline, yytext());
             }
           // fall through
           case 102: break;
           case 44:
-            { return new Symbol(sym.WHILEE,yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Sentencia While", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));return new Symbol(sym.WHILEE,yycolumn, yyline, yytext());
             }
           // fall through
           case 103: break;
           case 45:
-            { return new Symbol(sym.DOUBLEE,yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Tipos de Dato", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));  return new Symbol(sym.DOUBLEE,yycolumn, yyline, yytext());
             }
           // fall through
           case 104: break;
           case 46:
-            { return new Symbol(sym.STRINGG,yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Tipos de Dato", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));  return new Symbol(sym.STRINGG,yycolumn, yyline, yytext());
             }
           // fall through
           case 105: break;
           case 47:
-            { return new Symbol(sym.SWITCHH,yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Sentencia Switch", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));  return new Symbol(sym.SWITCHH,yycolumn, yyline, yytext());
             }
           // fall through
           case 106: break;
           case 48:
-            { return new Symbol(sym.TITULO,yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Palabra reservada Titulo", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));   return new Symbol(sym.TITULO,yycolumn, yyline, yytext());
             }
           // fall through
           case 107: break;
           case 49:
-            { return new Symbol(sym.DEFAULTT,yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Default", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));  return new Symbol(sym.DEFAULTT,yycolumn, yyline, yytext());
             }
           // fall through
           case 108: break;
           case 50:
-            { return new Symbol(sym.ELSEIF,yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Sentencia Else If", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));  return new Symbol(sym.ELSEIF,yycolumn, yyline, yytext());
             }
           // fall through
           case 109: break;
           case 51:
-            { return new Symbol(sym.TITULOX,yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Palabra reservada Titulos X", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));  return new Symbol(sym.TITULOX,yycolumn, yyline, yytext());
             }
           // fall through
           case 110: break;
           case 52:
-            { return new Symbol(sym.TITULOY,yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Palabra reservada Titulo Y", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));  return new Symbol(sym.TITULOY,yycolumn, yyline, yytext());
             }
           // fall through
           case 111: break;
           case 53:
-            { return new Symbol(sym.VAL,yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Palabra reservada Valores", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));   return new Symbol(sym.VAL,yycolumn, yyline, yytext());
             }
           // fall through
           case 112: break;
           case 54:
-            { return new Symbol(sym.NVALOR,yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "<NewValor>", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));           return new Symbol(sym.NVALOR,yycolumn, yyline, yytext());
             }
           // fall through
           case 113: break;
           case 55:
-            { return new Symbol(sym.VOIDD,yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Declaración del main", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));  return new Symbol(sym.VOIDD,yycolumn, yyline, yytext());
             }
           // fall through
           case 114: break;
           case 56:
-            { return new Symbol(sym.PRINT,yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Sentencia Imprimir", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));  return new Symbol(sym.PRINT,yycolumn, yyline, yytext());
             }
           // fall through
           case 115: break;
           case 57:
-            { return new Symbol(sym.PIE,yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Declaración Gráfica de Pie", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));   return new Symbol(sym.PIE,yycolumn, yyline, yytext());
             }
           // fall through
           case 116: break;
           case 58:
-            { return new Symbol(sym.BARRAS,yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Declaración Gráfica de Barras", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));  return new Symbol(sym.BARRAS,yycolumn, yyline, yytext());
             }
           // fall through
           case 117: break;
           case 59:
-            { return new Symbol(sym.GLOBAL,yycolumn, yyline, yytext());
+            { Rtokens.add(new token(yytext()+"", "Declaración Variables Globales", Integer.toString(yyline+1), Integer.toString(yycolumn+1)));   return new Symbol(sym.GLOBAL,yycolumn, yyline, yytext());
             }
           // fall through
           case 118: break;

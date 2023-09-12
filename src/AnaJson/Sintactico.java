@@ -123,11 +123,9 @@ public class Sintactico extends java_cup.runtime.lr_parser {
 
     public void llenarAccion(Acciones gestor){
          acciones = gestor ;
-         System.out.println("Entre llenarAccion");
     }
 
     public Acciones ver(){
-        System.out.println("entre ver");
           return acciones;
     }
     public void syntax_error(Symbol s)

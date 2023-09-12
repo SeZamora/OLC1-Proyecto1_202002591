@@ -30,6 +30,7 @@ public class Interfaz extends javax.swing.JFrame {
      */
    String analizador="";
    String tituloJson="";
+   String salida ="";
    Acciones acciones = new Acciones();
    DefaultCategoryDataset dataset = new DefaultCategoryDataset();
    
@@ -261,6 +262,8 @@ public class Interfaz extends javax.swing.JFrame {
                         Parser parser = new Parser(scanner);
                         parser.llenarAccion(acciones);
                         parser.parse();
+                        salida = parser.textoSalida();
+                        jTextArea2.setText(salida);
                         System.out.println("Analisis finalizado Statpy");
 
                     } catch (Exception e) {
