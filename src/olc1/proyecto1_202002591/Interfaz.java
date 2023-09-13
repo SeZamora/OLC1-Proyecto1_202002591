@@ -5,10 +5,10 @@
 package olc1.proyecto1_202002591;
 import Analizador.Lexico;
 import Analizador.Parser;
-
+import Errores.*;
+import Tokens.*;
 import AnaJson.Lex;
 import AnaJson.Sintactico;
-
 import Analizador.sym;
 import java.io.BufferedReader;
 import java.io.File;
@@ -19,6 +19,12 @@ import java_cup.runtime.Symbol;
 import javax.swing.JFileChooser;
 import DatosJson.Acciones;
 import org.jfree.data.category.DefaultCategoryDataset;
+import java.awt.Desktop;
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
 /**
  *
  * @author SEBASTIAN ZAMORA
@@ -32,6 +38,9 @@ public class Interfaz extends javax.swing.JFrame {
    String tituloJson="";
    String salida ="";
    Acciones acciones = new Acciones();
+  ArrayList<Excepcion> erroresLexicos = new ArrayList<Excepcion>() ;
+  ArrayList<token> tokens = new ArrayList<token>() ;
+   ArrayList<Excepcion> erroresSintacticos = new ArrayList<Excepcion>() ;
    DefaultCategoryDataset dataset = new DefaultCategoryDataset();
    
     public Interfaz() {
@@ -199,9 +208,19 @@ public class Interfaz extends javax.swing.JFrame {
         jMenu4.setText("Reporte");
 
         jMenuItem6.setText("Reporte de Tokens:");
+        jMenuItem6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem6ActionPerformed(evt);
+            }
+        });
         jMenu4.add(jMenuItem6);
 
         jMenuItem7.setText("Reporte de Errores Léxicos");
+        jMenuItem7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem7ActionPerformed(evt);
+            }
+        });
         jMenu4.add(jMenuItem7);
 
         jMenuBar1.add(jMenu4);
@@ -255,20 +274,61 @@ public class Interfaz extends javax.swing.JFrame {
         
                 String entrada = jTextArea1.getText();
                 if (analizador == "StatPy"){
-                    
+
                 
                     try {
                         Lexico scanner = new Lexico(new java.io.StringReader(entrada));
                         Parser parser = new Parser(scanner);
+                   
                         parser.llenarAccion(acciones);
                         parser.parse();
                         salida = parser.textoSalida();
+                        erroresSintacticos.clear();
+                        erroresLexicos.clear();
+                        tokens.clear();
+                        erroresSintacticos =  parser.ArrayError();
+                        erroresLexicos = scanner.ArrayError();
+                        tokens = scanner.ArrayToken();
+                    
                         jTextArea2.setText(salida);
                         System.out.println("Analisis finalizado Statpy");
+                                  // generar reporte de errores lexicos
+                                  String contend ="";
+           for (Excepcion elemento : erroresLexicos) {
+        contend+=                   "			<tr>\n" +
+"				<td>"+elemento.getLexema()+"</td>\n" +
+"				<td>"+elemento.getDescripcion()+"</td>\n" +
+"				<td>"+elemento.getLinea()+"</td>\n" +
+"				<td>"+elemento.getColumna()+"</td>\n" +
+"			</tr>\n";
+        }
+         
+       HtmlError.error_lexico(contend);
+            
+                                 String tok = "";
+                                  // generar reporte de errores lexicos
+           for (token elemento : tokens) {
+        tok+=                   "			<tr>\n" +
+"				<td>"+elemento.getLexema()+"</td>\n" +
+"				<td>"+elemento.getToken()+"</td>\n" +
+"				<td>"+elemento.getLinea()+"</td>\n" +
+"				<td>"+elemento.getColumna()+"</td>\n" +
+"			</tr>\n";
+        }
+         
+       HtmlToken.insertarToken(tok);
+            
+         
+             scanner.LimpiarLex();
+                        scanner.LimpiarToken();
+                        parser.LimpiarSin();
 
+        
+                    
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+
                 } else if (analizador == "Json"){
                     String titulo = "NombreJson: \""+tituloJson+"\"\n ";
                     try {
@@ -276,9 +336,44 @@ public class Interfaz extends javax.swing.JFrame {
                         Sintactico parser = new Sintactico(scanner);
                         parser.llenarAccion(acciones);
                         parser.parse();
+                        erroresSintacticos.clear();
+                        erroresLexicos.clear();
+                        tokens.clear();
+                        erroresSintacticos =  parser.ArrayError();
+                        erroresLexicos = scanner.ArrayError();
+                        tokens = scanner.ArrayToken();
                         acciones = parser.ver();
                         acciones.printAllData();
+                   
                         System.out.println("Analisis finalizado Json");
+                              String contend = "";
+                                  // generar reporte de errores lexicos
+           for (Excepcion elemento : erroresLexicos) {
+        contend+=                   "			<tr>\n" +
+"				<td>"+elemento.getLexema()+"</td>\n" +
+"				<td>"+elemento.getDescripcion()+"</td>\n" +
+"				<td>"+elemento.getLinea()+"</td>\n" +
+"				<td>"+elemento.getColumna()+"</td>\n" +
+"			</tr>\n";
+        }
+         
+       HtmlError.error_lexico(contend);
+            
+                                 String tok = "";
+                                  // generar reporte de errores lexicos
+           for (token elemento : tokens) {
+        tok+=                   "			<tr>\n" +
+"				<td>"+elemento.getLexema()+"</td>\n" +
+"				<td>"+elemento.getToken()+"</td>\n" +
+"				<td>"+elemento.getLinea()+"</td>\n" +
+"				<td>"+elemento.getColumna()+"</td>\n" +
+"			</tr>\n";
+        }
+         
+       HtmlToken.insertarToken(tok);
+             scanner.LimpiarLex();
+                        scanner.LimpiarToken();
+                        parser.LimpiarSin();
 
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -291,6 +386,48 @@ public class Interfaz extends javax.swing.JFrame {
         analizador = "Json";
         jLabel4.setText("Json");
     }//GEN-LAST:event_jMenuItem5ActionPerformed
+
+    private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
+        try {
+            // Verifica si el sistema permite la interacción con el escritorio
+            if (Desktop.isDesktopSupported()) {
+                File archivoHTML = new File("M:\\Sebastian Zamora\\Documents\\NetBeansProjects\\[OLC1]Proyecto1_202002591\\Reportes\\Tokens.html");
+
+                // Verifica si el archivo HTML existe
+                if (archivoHTML.exists()) {
+                    // Abre el archivo HTML en el navegador predeterminado
+                    Desktop.getDesktop().browse(archivoHTML.toURI());
+                } else {
+                    System.out.println("El archivo HTML no existe en la ruta especificada.");
+                }
+            } else {
+                System.out.println("La operación no es compatible en este sistema.");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_jMenuItem6ActionPerformed
+
+    private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem7ActionPerformed
+                try {
+            // Verifica si el sistema permite la interacción con el escritorio
+            if (Desktop.isDesktopSupported()) {
+                File archivoHTML = new File("M:\\Sebastian Zamora\\Documents\\NetBeansProjects\\[OLC1]Proyecto1_202002591\\Reportes\\Errores.html");
+
+                // Verifica si el archivo HTML existe
+                if (archivoHTML.exists()) {
+                    // Abre el archivo HTML en el navegador predeterminado
+                    Desktop.getDesktop().browse(archivoHTML.toURI());
+                } else {
+                    System.out.println("El archivo HTML no existe en la ruta especificada.");
+                }
+            } else {
+                System.out.println("La operación no es compatible en este sistema.");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_jMenuItem7ActionPerformed
 
     /**
      * @param args the command line arguments

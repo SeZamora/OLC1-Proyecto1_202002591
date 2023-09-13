@@ -18,10 +18,24 @@ import Tokens.token;
 
 %{ 
 
-        // crear un arraylist para los errores lexicos
-        public  ArrayList<Excepcion> erroresLexicos = new ArrayList<Excepcion>() ;
+             // crear un arraylist para los errores lexicos
+       ArrayList<Excepcion> erroresLexicos = new ArrayList<Excepcion>() ;
         // array tokens
-        public  ArrayList<token> Rtokens = new ArrayList<token>() ;
+       ArrayList<token> Rtokens = new ArrayList<token>() ;
+       
+        public ArrayList<token> ArrayToken(){
+            return Rtokens;
+       }
+        public ArrayList<Excepcion> ArrayError(){
+                   return erroresLexicos;
+              }
+
+              public void LimpiarLex(){
+                  erroresLexicos.clear();
+              }
+            public void LimpiarToken(){
+                  Rtokens.clear();
+              }
 %}  
 
 //expresion regular

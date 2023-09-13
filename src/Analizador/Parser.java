@@ -9,6 +9,7 @@ import java_cup.runtime.*;
 import DatosJson.Acciones;
 import VariablesGlobales.FuncionesGlobales;
 import java.util.ArrayList;
+import Errores.Excepcion;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartFrame;
 import org.jfree.chart.JFreeChart;
@@ -864,16 +865,26 @@ public class Parser extends java_cup.runtime.lr_parser {
     }
 
 
-    // debo crear un datos aqui y pasarselo a la interfaz como el Accion
-    public void syntax_error(Symbol s)
-    {
-            System.err.println("Error Sintactico: "+ s.value + " - Fila: " + s.right + " - Columna: " + s.left + ". Recuperado" );
+     ///  declarar un arraylist para los errores sintacticos 
+    ArrayList<Excepcion> erroresSintacticos = new ArrayList<Excepcion>();
+
+    public void syntax_error(Symbol s){
+        //System.out.println("Error R de sintaxis: "+ s.value +" Linea "+(s.left+1)+" columna "+(s.right+1) );
+        erroresSintacticos.add(new Excepcion("Sintáctico", "Error Recuperable de sintaxis: "+ s.value , Integer.toString(s.left+1), Integer.toString(s.right+1) ));
     }
 
-    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception
-    {
-            System.err.println("Error Sintactico: "+ s.value + " - Fila: " + s.right + " - Columna: " + s.left + ". Sin recuperacion." );
+    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{ 
+        //System.out.println("Error NR de sintaxis: "+ s.value +" Linea "+(s.left+1)+" columna "+(s.right+1) );
+        erroresSintacticos.add(new Excepcion("Sintáctico", "Error No Recuperable de sintaxis: "+ s.value , Integer.toString(s.left+1), Integer.toString(s.right+1) ));
     }
+        public ArrayList<Excepcion> ArrayError(){
+                   return erroresSintacticos;
+         }
+
+              public void LimpiarSin(){
+                  erroresSintacticos.clear();
+              }
+
 
 
 

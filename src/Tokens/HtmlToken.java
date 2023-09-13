@@ -4,6 +4,10 @@
  */
 package Tokens;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+
 /**
  *
  * @author SEBASTIAN ZAMORA
@@ -54,23 +58,33 @@ public class HtmlToken {
 "		</thead>\n" +
 "		<tbody>";
     
-    public static void insertar_tokens(String lexema, String token, String linea, String columna){
-        imprimirhtml +=  "			<tr>\n" +
-"				<td>"+lexema+"</td>\n" +
-"				<td>"+token+"</td>\n" +
-"				<td>"+linea+"</td>\n" +
-"				<td>"+columna+"</td>\n" +
-"			</tr>\n";
-        
-    }
-
-    
-    public static void cerrar(){
-        imprimirhtml +=  "</tbody>\n" +
+   public static void insertarToken(String contenido){
+                String enviar = "";
+              enviar =   imprimirhtml + contenido + "</tbody>\n" +
 "	</table>\n" +
 "</body>\n" +
 "</html>";
-        
-}
+        EscribirArchivo(enviar, "./Reportes/Tokens.html");
+    }
+
     
+
+       public static void EscribirArchivo(String contenido, String ruta){
+        try {
+
+            File file = new File(ruta);
+            // Si el archivo no existe es creado
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+            FileWriter fw = new FileWriter(file);
+            BufferedWriter bw = new BufferedWriter(fw);
+            bw.write(contenido);
+            bw.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+
+    }
 }
