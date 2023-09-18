@@ -21,10 +21,12 @@ import DatosJson.Acciones;
 import org.jfree.data.category.DefaultCategoryDataset;
 import java.awt.Desktop;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import javax.swing.JOptionPane;
 /**
  *
  * @author SEBASTIAN ZAMORA
@@ -96,8 +98,6 @@ public class Interfaz extends javax.swing.JFrame {
         jLabel2.setText("Salida:");
 
         jLabel3.setText("Analizador:");
-
-        jLabel4.setText("jLabel4");
 
         jButton1.setText("Ejecutar");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -181,6 +181,11 @@ public class Interfaz extends javax.swing.JFrame {
         jMenu1.add(jMenuItem2);
 
         jMenuItem3.setText("Gurdar Como");
+        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem3ActionPerformed(evt);
+            }
+        });
         jMenu1.add(jMenuItem3);
 
         jMenuBar1.add(jMenu1);
@@ -259,7 +264,13 @@ public class Interfaz extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
-        // TODO add your handling code here:
+        try {
+            FileWriter writer = new FileWriter(texto);
+            writer.write(jTextArea1.getText());
+            writer.close();
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Error al guardar el archivo.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
@@ -429,6 +440,22 @@ public class Interfaz extends javax.swing.JFrame {
             e.printStackTrace();
         }
     }//GEN-LAST:event_jMenuItem7ActionPerformed
+
+    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
+            JFileChooser fileChooser = new JFileChooser();
+            int resultado = fileChooser.showSaveDialog(this);
+            if (resultado == JFileChooser.APPROVE_OPTION) {
+                texto = fileChooser.getSelectedFile();
+                        try {
+                    FileWriter writer = new FileWriter(texto);
+                    writer.write(jTextArea1.getText());
+                    writer.close();
+                            } catch (IOException e) {
+                                JOptionPane.showMessageDialog(this, "Error al guardar el archivo.", "Error", JOptionPane.ERROR_MESSAGE);
+                            }
+            }
+        
+    }//GEN-LAST:event_jMenuItem3ActionPerformed
 
     /**
      * @param args the command line arguments

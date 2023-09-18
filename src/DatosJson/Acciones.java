@@ -15,7 +15,7 @@ public class Acciones {
 
     public void createJson(String jsonName) {
         jsons.put(jsonName, new Jsons(jsonName));
-        System.out.println("Continente '" + jsonName + "' creado.");
+        System.out.println("Json  '" + jsonName + "' creado.");
     }
 
     public void addVariable(String jsonName, String variableName, String simboloName) {
@@ -41,7 +41,7 @@ public class Acciones {
     
         public void printAllData() {
             for (String jsonName : jsons.keySet()) {
-                System.out.println("Continente: " + jsonName);
+                System.out.println("Json: " + jsonName);
                 Jsons json = jsons.get(jsonName);
 
                 for (String variableName : json.getVariables().keySet()) {

@@ -324,7 +324,7 @@ expresion ::= CADENA:a {:RESULT=a;:}
 | expresion:a IGUAL:c expresion:b {:RESULT=a+c+b;:}
 | expresion:a MAYIGUAL:c expresion:b {:RESULT=a+c+b;:}
 | expresion:a MENIGUAL:c expresion:b {:RESULT=a+c+b;:}
-| expresion:a NOTT:c expresion:b {:RESULT=a+" not "+b;:}
+|  NOTT:c expresion:b {:RESULT=" not "+b;:}
 | expresion:a DISTINTO:c expresion:b {:RESULT=a+c+b;:}
 | expresion:a ANDD:c expresion:b {:RESULT=a+" and "+b;:}
 | expresion:a ORR:c expresion:b {:RESULT=a+" or "+b;:}
@@ -349,7 +349,7 @@ escribir ::= CADENA:a {:RESULT=a;:}
 | escribir:a IGUAL:c escribir:b {:RESULT=a+c+b;:}
 | escribir:a MAYIGUAL:c escribir:b {:RESULT=a+c+b;:}
 | escribir:a MENIGUAL:c escribir:b {:RESULT=a+c+b;:}
-| escribir:a NOTT:c escribir:b {:RESULT=a+" not "+b;:}
+| NOTT:c escribir:b {:RESULT=" not "+b;:}
 | escribir:a DISTINTO:c escribir:b {:RESULT=a+c+b;:}
 | escribir:a ANDD:c escribir:b {:RESULT=a+" and "+b;:}
 | escribir:a ORR:c escribir:b {:RESULT=a+" or "+b;:}
